@@ -470,9 +470,9 @@
         const canvas = document.querySelector('canvas.webgl');
         const scene = new THREE.Scene();
         
-        // **PARÁMETROS DE AUTENTICACIÓN**
+        // **PARÁMETROS DE AUTENTICACIÓN (ACTUALIZADOS)**
         const CORRECT_USERNAME = "Mariangel"; // Define el nombre correcto
-        const CORRECT_PASSWORD = "27"; // Define la clave secreta
+        const CORRECT_PASSWORD = "0112"; // Define la clave secreta (CAMBIADA)
         
         let animationStarted = false; // Bandera para controlar la animación
         let controls, camera, renderer, clock;
@@ -816,7 +816,6 @@
         // --- Lógica de Autenticación (CORREGIDA) ---
         const loginOverlay = document.getElementById('login-overlay');
         const loginButton = document.getElementById('loginButton');
-        // Vuelve a dirigir las variables para usar los IDs correctos del HTML:
         const usernameInput = document.getElementById('Mariangel'); 
         const passwordInput = document.getElementById('0112');
         const errorMessage = document.getElementById('error-message');
@@ -843,11 +842,10 @@
             // Hacemos la comparación del nombre de usuario insensible a mayúsculas/minúsculas
             if (enteredUsername.toLowerCase() === CORRECT_USERNAME.toLowerCase() && enteredPassword === CORRECT_PASSWORD) {
                 
-                // 1. REPRODUCIR MÚSICA
+                // 1. REPRODUCIR MÚSICA (ACTUALIZADO: Se intenta reproducir inmediatamente)
                 // Nota: Esto funciona porque el click del botón es una interacción del usuario.
                 backgroundMusic.play().catch(error => {
                     console.error("Error al intentar reproducir el audio:", error);
-                    // Opcional: mostrar un mensaje si el navegador lo bloquea completamente
                 });
 
 
@@ -874,8 +872,8 @@
                 
 
             } else {
-                // Error: Mostrar mensaje de error más visible
-                errorMessage.textContent = "Nombre o clave incorrectos. (Pista: La clave es '27')";
+                // Error: Mostrar mensaje de error (SIN PISTA)
+                errorMessage.textContent = "Nombre o clave incorrectos. Intenta de nuevo."; // Pista eliminada
                 errorMessage.style.opacity = '1';
                 passwordInput.value = ''; // Borrar clave para un nuevo intento
                 

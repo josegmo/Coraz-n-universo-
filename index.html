@@ -816,12 +816,21 @@
         // --- Lógica de Autenticación (CORREGIDA) ---
         const loginOverlay = document.getElementById('login-overlay');
         const loginButton = document.getElementById('loginButton');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
+        // Vuelve a dirigir las variables para usar los IDs correctos del HTML:
+        const usernameInput = document.getElementById('Mariangel'); 
+        const passwordInput = document.getElementById('0112');
         const errorMessage = document.getElementById('error-message');
         const backgroundMusic = document.getElementById('background-music'); // 💖 Elemento de audio
 
         const handleLogin = () => {
+            // Se debe verificar si los inputs se cargaron correctamente
+            if (!usernameInput || !passwordInput) {
+                errorMessage.textContent = "Error interno: Los campos de entrada no se encontraron en el DOM.";
+                errorMessage.style.opacity = '1';
+                console.error("No se pudieron encontrar los campos de entrada. Revisa los IDs.");
+                return;
+            }
+
             const enteredUsername = usernameInput.value.trim();
             const enteredPassword = passwordInput.value.trim();
             

@@ -259,17 +259,36 @@
             font-family: 'Georgia', serif; font-size: 14px; text-align: center; background: rgba(0, 0, 0, 0.3);
             padding: 8px 16px; border-radius: 20px; backdrop-filter: blur(5px); z-index: 10;
         }
-        /* Menú de configuración */
-        .menu-button {
-            position: fixed; top: 15px; left: 15px; width: 40px; height: 40px;
+        
+        /* Controles de Interfaz */
+        .control-button {
+            position: fixed; top: 15px; width: 40px; height: 40px;
             background: rgba(0, 0, 0, 0.4); border-radius: 50%; display: flex;
-            flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; z-index: 20; backdrop-filter: blur(5px);
+            justify-content: center; align-items: center; cursor: pointer; 
+            z-index: 20; backdrop-filter: blur(5px); color: white;
+            font-size: 18px; transition: background 0.2s;
+        }
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Posición del botón de menú (izquierda) */
+        .menu-button {
+            left: 15px; 
+            display: flex; /* Mostrar las líneas del menú */
+            flex-direction: column;
         }
         .menu-button span {
             display: block; width: 20px; height: 2px; background: white;
             margin: 2px 0; border-radius: 1px;
         }
+
+        /* Nuevo: Posición del botón de música (derecha) */
+        #musicButton {
+            right: 15px;
+        }
+        
+        /* Menú de configuración (se mantiene igual) */
         .config-panel {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: rgba(10, 10, 20, 0.95); backdrop-filter: blur(10px);
@@ -334,6 +353,11 @@
         }
         
         .overlay.active { display: block; }
+
+        /* Clase para ocultar temporalmente los botones de interfaz durante el login */
+        .hidden-interface {
+            display: none !important;
+        }
         
         @media (max-width: 480px) {
             .config-panel { width: 100%; left: -100%; }
@@ -380,14 +404,20 @@
             <p id="error-message">Nombre o clave incorrectos. Intenta de nuevo.</p>
         </div>
     </div>
-    <canvas class="webgl"></canvas>
-    <div class="instructions">Te Amo amorcito</div>
-    <div class="credits">By JM</div>
     
-    <div class="menu-button" id="menuButton">
+    <canvas class="webgl"></canvas>
+    
+    <div class="instructions hidden-interface" id="instructions">Te Amo amorcito</div>
+    <div class="credits hidden-interface" id="credits">By JM</div>
+    
+    <div class="control-button menu-button hidden-interface" id="menuButton">
         <span></span>
         <span></span>
         <span></span>
+    </div>
+
+    <div class="control-button hidden-interface" id="musicButton">
+        <i class="fas fa-volume-mute" id="musicIcon"></i>
     </div>
     
     <div class="overlay" id="overlay"></div>
@@ -757,7 +787,11 @@
                 renderer.setSize(sizes.width, sizes.height); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
                 renderer.setClearColor(0x000000, 1);
                 clock = new THREE.Clock();
+                
+                // Configurar y mostrar botones de interfaz
                 setupMenuInteractions();
+                setupMusicControl(); // Nuevo controlador de música
+
                 animationStarted = true;
                 tick();
             }
@@ -788,12 +822,22 @@
             window.requestAnimationFrame(tick);
         };
         
+        // --- Lógica de Interacciones de Menú ---
         const setupMenuInteractions = () => {
             const menuButton = document.getElementById('menuButton');
             const configPanel = document.getElementById('configPanel');
             const closeButton = document.getElementById('closeButton');
             const overlay = document.getElementById('overlay');
+            const instructions = document.getElementById('instructions');
+            const credits = document.getElementById('credits');
+            const musicButton = document.getElementById('musicButton');
 
+            // Asegurar que los elementos de interfaz se muestren
+            menuButton.classList.remove('hidden-interface');
+            musicButton.classList.remove('hidden-interface');
+            instructions.classList.remove('hidden-interface');
+            credits.classList.remove('hidden-interface');
+            
             menuButton.addEventListener('click', () => { configPanel.classList.add('open'); overlay.classList.add('active'); });
             [closeButton, overlay].forEach(el => { el.addEventListener('click', () => { configPanel.classList.remove('open'); overlay.classList.remove('active'); }); });
             document.getElementById('heartSize').addEventListener('input', (e) => { parameters.heartSize = parseFloat(e.target.value); generateHearts(); });
@@ -812,17 +856,46 @@
                 });
             });
         };
+        
+        // --- Nueva Lógica de Control de Música ---
+        const setupMusicControl = () => {
+            const backgroundMusic = document.getElementById('background-music');
+            const musicButton = document.getElementById('musicButton');
+            const musicIcon = document.getElementById('musicIcon');
+            let isPlaying = false; // Estado inicial: música detenida
 
-        // --- Lógica de Autenticación ---
+            musicButton.addEventListener('click', () => {
+                if (isPlaying) {
+                    backgroundMusic.pause();
+                    musicIcon.classList.remove('fa-volume-up');
+                    musicIcon.classList.add('fa-volume-mute');
+                    isPlaying = false;
+                } else {
+                    backgroundMusic.play().then(() => {
+                        musicIcon.classList.remove('fa-volume-mute');
+                        musicIcon.classList.add('fa-volume-up');
+                        isPlaying = true;
+                    }).catch(error => {
+                        console.error("No se pudo reproducir el audio. Asegúrate de que el archivo existe:", error);
+                        // Opcional: Mostrar un mensaje de error al usuario
+                    });
+                }
+            });
+            
+            // Iniciar la música por defecto (opcional, si se quiere que suene al cargar la escena, 
+            // aunque el usuario tenga que darle al botón)
+            // musicButton.click(); // Descomentar si se quiere intentar que empiece a sonar inmediatamente después del login
+        };
+
+
+        // --- Lógica de Autenticación (Se mantiene) ---
         const loginOverlay = document.getElementById('login-overlay');
         const loginButton = document.getElementById('loginButton');
         const usernameInput = document.getElementById('Mariangel'); 
         const passwordInput = document.getElementById('0112');
         const errorMessage = document.getElementById('error-message');
-        const backgroundMusic = document.getElementById('background-music'); // 💖 Elemento de audio
 
         const handleLogin = () => {
-            // Se debe verificar si los inputs se cargaron correctamente
             if (!usernameInput || !passwordInput) {
                 errorMessage.textContent = "Error interno: Los campos de entrada no se encontraron en el DOM.";
                 errorMessage.style.opacity = '1';
@@ -833,51 +906,36 @@
             const enteredUsername = usernameInput.value.trim();
             const enteredPassword = passwordInput.value.trim();
             
-            // Remover cualquier clase de error anterior y restablecer estilo
             loginButton.classList.remove('shake');
             errorMessage.style.opacity = '0';
-            errorMessage.style.color = '#FF6B6B'; // Color de error por defecto
-            errorMessage.classList.remove('success-msg'); // Limpiar la clase de éxito
+            errorMessage.style.color = '#FF6B6B';
+            errorMessage.classList.remove('success-msg');
 
-            // Hacemos la comparación del nombre de usuario insensible a mayúsculas/minúsculas
             if (enteredUsername.toLowerCase() === CORRECT_USERNAME.toLowerCase() && enteredPassword === CORRECT_PASSWORD) {
                 
-                // 1. REPRODUCIR MÚSICA
-                // Se intenta reproducir inmediatamente. Si el cambio de M4A local funciona, esto será estable.
-                backgroundMusic.play().catch(error => {
-                    console.error("Error al intentar reproducir el audio:", error);
-                });
-
-
-                // 2. MOSTRAR MENSAJE DE BIENVENIDA (VERDE Y GRANDE)
+                // NO se llama a backgroundMusic.play() aquí
+                
                 errorMessage.textContent = `Bienvenida ${CORRECT_USERNAME} ❤️`;
-                errorMessage.style.color = '#4CAF50'; // Color verde solicitado
+                errorMessage.style.color = '#4CAF50';
                 errorMessage.style.opacity = '1';
-                errorMessage.classList.add('success-msg'); // Añadir clase para hacerlo grande y centrado visualmente
+                errorMessage.classList.add('success-msg');
                 
-                // 3. ESPERAR Y COMENZAR ANIMACIÓN
-                
-                // Esperar 1.5 segundos para que se vea el mensaje
                 setTimeout(() => {
-                    // Iniciar la transición de desvanecimiento del overlay (CSS: 1s)
                     loginOverlay.style.opacity = '0';
                     
-                    // Esperar la duración de la transición (1 segundo) antes de ocultar y empezar 3D
                     setTimeout(() => {
                         loginOverlay.style.display = 'none';
-                        initScene(); // Inicializa la escena 3D y la animación
+                        initScene(); // Inicializa la escena 3D, los controles y el botón de música
                         document.body.style.fontFamily = 'Georgia, serif'; 
                     }, 1000); 
-                }, 1500); // 1.5 segundos de espera total
+                }, 1500);
                 
 
             } else {
-                // Error: Mostrar mensaje de error 
                 errorMessage.textContent = "Nombre o clave incorrectos. Intenta de nuevo."; 
                 errorMessage.style.opacity = '1';
-                passwordInput.value = ''; // Borrar clave para un nuevo intento
+                passwordInput.value = '';
                 
-                // Aplicar efecto de sacudida
                 loginButton.classList.add('shake');
                 
                 setTimeout(() => {
@@ -894,8 +952,14 @@
             }
         });
 
-        // La animación y la escena 3D solo se inicializarán después de un login exitoso.
-        // Los corazones CSS se inician para dar un fondo dinámico al login.
+        // Ocultar botones de interfaz al inicio
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('menuButton').classList.add('hidden-interface');
+            document.getElementById('musicButton').classList.add('hidden-interface');
+            document.getElementById('instructions').classList.add('hidden-interface');
+            document.getElementById('credits').classList.add('hidden-interface');
+        });
+
         createCSSHearts(); 
 
     </script>

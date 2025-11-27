@@ -343,7 +343,7 @@
 </head>
 <body>
     <audio id="background-music" loop>
-        <source src="https://www.purple-planet.com/api/download/the-time-to-love-is-now.mp3" type="audio/mpeg">
+        <source src="Colde (콜드) - Star OST See You In My 19th Life [lyrics](M4A_128K).m4a" type="audio/m4a">
         Tu navegador no soporta el elemento de audio.
     </audio>
 
@@ -470,9 +470,9 @@
         const canvas = document.querySelector('canvas.webgl');
         const scene = new THREE.Scene();
         
-        // **PARÁMETROS DE AUTENTICACIÓN (ACTUALIZADOS)**
+        // **PARÁMETROS DE AUTENTICACIÓN**
         const CORRECT_USERNAME = "Mariangel"; // Define el nombre correcto
-        const CORRECT_PASSWORD = "0112"; // Define la clave secreta (CAMBIADA)
+        const CORRECT_PASSWORD = "0112"; // Define la clave secreta
         
         let animationStarted = false; // Bandera para controlar la animación
         let controls, camera, renderer, clock;
@@ -813,7 +813,7 @@
             });
         };
 
-        // --- Lógica de Autenticación (CORREGIDA) ---
+        // --- Lógica de Autenticación ---
         const loginOverlay = document.getElementById('login-overlay');
         const loginButton = document.getElementById('loginButton');
         const usernameInput = document.getElementById('Mariangel'); 
@@ -842,8 +842,8 @@
             // Hacemos la comparación del nombre de usuario insensible a mayúsculas/minúsculas
             if (enteredUsername.toLowerCase() === CORRECT_USERNAME.toLowerCase() && enteredPassword === CORRECT_PASSWORD) {
                 
-                // 1. REPRODUCIR MÚSICA (ACTUALIZADO: Se intenta reproducir inmediatamente)
-                // Nota: Esto funciona porque el click del botón es una interacción del usuario.
+                // 1. REPRODUCIR MÚSICA
+                // Se intenta reproducir inmediatamente. Si el cambio de M4A local funciona, esto será estable.
                 backgroundMusic.play().catch(error => {
                     console.error("Error al intentar reproducir el audio:", error);
                 });
@@ -872,8 +872,8 @@
                 
 
             } else {
-                // Error: Mostrar mensaje de error (SIN PISTA)
-                errorMessage.textContent = "Nombre o clave incorrectos. Intenta de nuevo."; // Pista eliminada
+                // Error: Mostrar mensaje de error 
+                errorMessage.textContent = "Nombre o clave incorrectos. Intenta de nuevo."; 
                 errorMessage.style.opacity = '1';
                 passwordInput.value = ''; // Borrar clave para un nuevo intento
                 

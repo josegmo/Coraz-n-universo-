@@ -118,7 +118,7 @@
             box-shadow: 0 5px 15px rgba(255, 96, 48, 0.5);
         }
 
-        /* --- Estilos de la Animación (Sin cambios) --- */
+        /* --- Estilos de la Animación (Ocultos al inicio) --- */
 
         .heart {
             position: absolute;
@@ -541,20 +541,26 @@
             <h3>MR</h3>
             <p>Te Amo Muchote Mi Niña Hermosa</p>
             
-            </a>
             <p style="margin-top: 12px; font-size: 12px; color: rgba(255, 255, 255, 0.6);">
                And
             </p>
         </div>
     </div>
 
+    <audio id="bg-music" loop>
+        <source src="https://github.com/Gon-p/G-/raw/refs/heads/main/adore%20-%20_did%20i%20tell%20u%20that%20i%20miss%20u_%20(lyric%20video).m4a" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
     <script>
-        // --- LÓGICA DE INICIO DE SESIÓN ---
+        // --- LÓGICA DE INICIO DE SESIÓN Y CONTROL DE AUDIO ---
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('login-form');
             const loginScreen = document.getElementById('login-screen');
             const loginMessage = document.getElementById('login-message');
+            const audio = document.getElementById('bg-music');
             
+            // 🔑 CREDENCIALES
             const USERNAME = 'Mariangel';
             const PASSWORD = '0112';
 
@@ -563,6 +569,11 @@
                 document.querySelector('.credits'),
                 document.getElementById('menuButton')
             ];
+            
+            // Configuración inicial de audio (volumen)
+            if (audio) {
+                audio.volume = 0.4;
+            }
 
             loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -574,24 +585,31 @@
                     loginMessage.style.color = '#25D366';
                     loginMessage.textContent = '¡Acceso Concedido!';
                     
-                    // Ocultar pantalla de login
+                    // 1. Ocultar pantalla de login con fade-out
                     loginScreen.style.opacity = '0';
                     setTimeout(() => {
                         loginScreen.style.display = 'none';
                         
-                        // Mostrar elementos ocultos de la animación
+                        // 2. Mostrar elementos de la animación
                         elementsToDisplay.forEach(el => {
                             if (el) el.style.display = 'block';
                         });
 
-                        // Iniciar el audio de fondo
-                        const audio = document.getElementById('bg-music');
+                        // 3. Iniciar el audio de fondo
                         if (audio) {
-                             audio.play().catch(e => console.log("Audio no pudo reproducirse automáticamente"));
+                             audio.play().catch(e => {
+                                console.log("Audio no pudo reproducirse automáticamente, requiere interacción.");
+                                loginMessage.textContent = 'Toca la pantalla para activar la música.';
+                                // Fallback para iOS/navegadores estrictos:
+                                document.addEventListener('click', function attemptPlay() {
+                                    audio.play().catch(e => {});
+                                    document.removeEventListener('click', attemptPlay);
+                                }, { once: true });
+                            });
                         }
                         
-                        // Iniciar la animación 3D (se ejecutará automáticamente debido al defer y type=module)
-                    }, 1000); // 1 segundo para la transición de opacidad
+                        // La animación 3D comienza automáticamente con el script type="module"
+                    }, 1000); 
 
                 } else {
                     loginMessage.style.color = '#ff6030';
@@ -1042,22 +1060,34 @@
         controls.enableZoom = true;
         controls.enablePan = false;
 
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            antialias: true
+        });
+        renderer.setSize(sizes.width, sizes.height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setClearColor(0x000000, 1);
+
         // Menú interacción
         const menuButton = document.getElementById('menuButton');
         const configPanel = document.getElementById('configPanel');
         const closeButton = document.getElementById('closeButton');
         const overlay = document.getElementById('overlay');
 
-        menuButton.addEventListener('click', () => {
-            configPanel.classList.add('open');
-            overlay.classList.add('active');
-        });
-
-        [closeButton, overlay].forEach(el => {
-            el.addEventListener('click', () => {
-                configPanel.classList.remove('open');
-                overlay.classList.remove('active');
+        if (menuButton) { // Solo añadir listeners si el menú existe (después del login)
+            menuButton.addEventListener('click', () => {
+                configPanel.classList.add('open');
+                overlay.classList.add('active');
             });
+        }
+        
+        [closeButton, overlay].forEach(el => {
+            if (el) {
+                el.addEventListener('click', () => {
+                    configPanel.classList.remove('open');
+                    overlay.classList.remove('active');
+                });
+            }
         });
 
         // Controles
@@ -1136,21 +1166,6 @@
         };
 
         tick();
-    </script>
-    
-    <audio id="bg-music" loop>
-        <source src="https://github.com/Gon-p/G-/raw/refs/heads/main/adore%20-%20_did%20i%20tell%20u%20that%20i%20miss%20u_%20(lyric%20video).m4a" type="audio/mpeg">
-        Tu navegador no soporta el elemento de audio.
-    </audio>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const audio = document.getElementById('bg-music');
-            if (audio) {
-                audio.volume = 0.4;
-                // Eliminamos el autoplay y la lógica de click aquí, se mueven al login exitoso
-            }
-        });
     </script>
 </body>
 </html>

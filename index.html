@@ -28,98 +28,7 @@
             outline: none;
         }
 
-        /* --- Estilos de la Pantalla de Login --- */
-        #login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #0a0a1a 0%, #000000 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999; /* Asegura que esté por encima de todo */
-            flex-direction: column;
-            transition: opacity 1s ease;
-        }
-
-        #login-form {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            border: 1px solid rgba(255, 96, 48, 0.3);
-        }
-
-        #login-form h1 {
-            font-family: 'Pacifico', cursive;
-            color: #ff6030;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 0 0 10px rgba(255, 96, 48, 0.7);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            color: white;
-            margin-bottom: 5px;
-            font-size: 1.1em;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #ff6030;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            font-size: 1em;
-            transition: border-color 0.3s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #0949f0;
-            box-shadow: 0 0 10px rgba(9, 73, 240, 0.5);
-        }
-
-        #login-message {
-            color: #ff6030;
-            margin-top: 15px;
-            height: 20px;
-        }
-
-        #login-button {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(45deg, #ff6030, #ff0055);
-            color: white;
-            font-size: 1.2em;
-            font-weight: bold;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        #login-button:hover {
-            background: linear-gradient(45deg, #ff0055, #ff6030);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 96, 48, 0.5);
-        }
-
-        /* --- Estilos de la Animación (Ocultos al inicio) --- */
-
+        /* Floating CSS hearts in background */
         .heart {
             position: absolute;
             color: rgba(255, 100, 100, 0.15);
@@ -209,7 +118,7 @@
             height: 100%;
             background: rgba(10, 10, 20, 0.95);
             backdrop-filter: blur(10px);
-            z-index: 15;
+            z-index: 25; /* Aumentado para asegurar que esté sobre el canvas */
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -424,7 +333,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 14;
+            z-index: 24; /* Aumentado para asegurar que esté sobre el canvas */
             display: none;
         }
         
@@ -449,27 +358,12 @@
     </style>
 </head>
 <body>
-    
-    <div id="login-screen">
-        <form id="login-form">
-            <h1>👑 Acceso 👑</h1>
-            <div class="input-group">
-                <label for="username">Nombre de Usuario</label>
-                <input type="text" id="username" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" required>
-            </div>
-            <div id="login-message"></div>
-            <button type="submit" id="login-button">Entrar</button>
-        </form>
-    </div>
     <canvas class="webgl"></canvas>
-    <div class="instructions" style="display: none;">Te Amo Muchote</div>
-    <div class="credits" style="display: none;">By MR</div>
     
-    <div class="menu-button" id="menuButton" style="display: none;">
+    <div class="instructions">Te Amo Muchote</div>
+    <div class="credits">By MR</div>
+    
+    <div class="menu-button" id="menuButton">
         <span></span>
         <span></span>
         <span></span>
@@ -546,78 +440,28 @@
             </p>
         </div>
     </div>
-
-    <audio id="bg-music" loop>
+    <audio id="bg-music" loop autoplay>
         <source src="https://github.com/Gon-p/G-/raw/refs/heads/main/adore%20-%20_did%20i%20tell%20u%20that%20i%20miss%20u_%20(lyric%20video).m4a" type="audio/mpeg">
         Tu navegador no soporta el elemento de audio.
     </audio>
 
     <script>
-        // --- LÓGICA DE INICIO DE SESIÓN Y CONTROL DE AUDIO ---
+        // Lógica para el Audio y reproducción automática
         document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('login-form');
-            const loginScreen = document.getElementById('login-screen');
-            const loginMessage = document.getElementById('login-message');
             const audio = document.getElementById('bg-music');
             
-            // 🔑 CREDENCIALES
-            const USERNAME = 'Mariangel';
-            const PASSWORD = '0112';
-
-            const elementsToDisplay = [
-                document.querySelector('.instructions'),
-                document.querySelector('.credits'),
-                document.getElementById('menuButton')
-            ];
+            // Configurar audio
+            audio.volume = 0.4;
             
-            // Configuración inicial de audio (volumen)
-            if (audio) {
-                audio.volume = 0.4;
-            }
-
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const usernameInput = document.getElementById('username').value;
-                const passwordInput = document.getElementById('password').value;
-
-                if (usernameInput === USERNAME && passwordInput === PASSWORD) {
-                    loginMessage.style.color = '#25D366';
-                    loginMessage.textContent = '¡Acceso Concedido!';
-                    
-                    // 1. Ocultar pantalla de login con fade-out
-                    loginScreen.style.opacity = '0';
-                    setTimeout(() => {
-                        loginScreen.style.display = 'none';
-                        
-                        // 2. Mostrar elementos de la animación
-                        elementsToDisplay.forEach(el => {
-                            if (el) el.style.display = 'block';
-                        });
-
-                        // 3. Iniciar el audio de fondo
-                        if (audio) {
-                             audio.play().catch(e => {
-                                console.log("Audio no pudo reproducirse automáticamente, requiere interacción.");
-                                loginMessage.textContent = 'Toca la pantalla para activar la música.';
-                                // Fallback para iOS/navegadores estrictos:
-                                document.addEventListener('click', function attemptPlay() {
-                                    audio.play().catch(e => {});
-                                    document.removeEventListener('click', attemptPlay);
-                                }, { once: true });
-                            });
-                        }
-                        
-                        // La animación 3D comienza automáticamente con el script type="module"
-                    }, 1000); 
-
-                } else {
-                    loginMessage.style.color = '#ff6030';
-                    loginMessage.textContent = 'Nombre de usuario o contraseña incorrectos.';
-                }
+            // Intenta reproducir y añade listener para interacción
+            audio.play().catch(e => {
+                console.log("Audio no pudo reproducirse automáticamente, requiere interacción.");
+                document.addEventListener('click', function attemptPlay() {
+                    audio.play().catch(e => {});
+                    document.removeEventListener('click', attemptPlay);
+                }, { once: true });
             });
         });
-        // --- FIN LÓGICA DE INICIO DE SESIÓN ---
     </script>
     
     <script type="module">
@@ -1074,20 +918,16 @@
         const closeButton = document.getElementById('closeButton');
         const overlay = document.getElementById('overlay');
 
-        if (menuButton) { // Solo añadir listeners si el menú existe (después del login)
-            menuButton.addEventListener('click', () => {
-                configPanel.classList.add('open');
-                overlay.classList.add('active');
-            });
-        }
-        
+        menuButton.addEventListener('click', () => {
+            configPanel.classList.add('open');
+            overlay.classList.add('active');
+        });
+
         [closeButton, overlay].forEach(el => {
-            if (el) {
-                el.addEventListener('click', () => {
-                    configPanel.classList.remove('open');
-                    overlay.classList.remove('active');
-                });
-            }
+            el.addEventListener('click', () => {
+                configPanel.classList.remove('open');
+                overlay.classList.remove('active');
+            });
         });
 
         // Controles
